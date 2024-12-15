@@ -1,0 +1,54 @@
+
+name: Deploy to AWS
+
+# Trigger workflow on push to 'main' branch
+on:
+  push:
+    branches:
+      - master  # Change this to 'dev' or another branch if required
+
+jobs:
+  deploy:
+    name: Deploy to AWS
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: 'read'  # For checking out the code
+      id-token: 'write' # For OIDC authentication with AWS
+
+    steps:
+    # Step 1: Checkout the repository
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+
+    # Step 2: Set up Node.js environment for AWS CDK
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18' # Adjust this based on your project requirements
+
+    # Step 3: Install AWS CLI for AWS commands
+    - name: Install AWS CLI
+      uses: aws-actions/configure-aws-credentials@v3
+      with: 
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }} 
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }} 
+        aws-region: 'ap-south-1' # Change this to your AWS region
+
+    # Step 4: Install dependencies
+    - name: Install Dependencies
+      run: |
+        cd infrastructure
+        npm install
+
+    # Step 5: Bootstrap CDK (optional but recommended)
+    - name: Bootstrap AWS CDK
+      run: |
+        cd infrastructure
+        npx cdk bootstrap aws://685181039857/ap-south-1
+
+    # Step 6: Deploy the AWS CDK stack
+    - name: Deploy AWS CDK
+      run: |
+        cd infrastructure
+        npx cdk deploy --require-approval never
