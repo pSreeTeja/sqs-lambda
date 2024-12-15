@@ -3,6 +3,7 @@ import { Construct } from 'constructs';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { SqsEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
+import * as path from 'path'
 
 export class SqsLambdaStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -13,7 +14,7 @@ export class SqsLambdaStack extends cdk.Stack {
     });
     const lambdaFunction = new lambda.Function(this,'MyLambdaFunction',{
       runtime: lambda.Runtime.NODEJS_18_X,
-      code: lambda.Code.fromAsset('../../handlerLambda/'),
+      code: lambda.Code.fromAsset(path.join(__dirname,'../../handlerLambda/')),
       handler: 'src.index.handler',
     })
 
