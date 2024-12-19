@@ -16,9 +16,6 @@ export class SqsLambdaStack extends cdk.Stack {
       runtime: lambda.Runtime.NODEJS_18_X,
       code: lambda.Code.fromAsset(path.join(__dirname,'../../handlerLambda/')),
       handler: 'src.index.handler',
-      environment: {
-        QUEUE_URL: queue.queueUrl
-      }
     })
 
     queue.grantConsumeMessages(lambdaFunction);
